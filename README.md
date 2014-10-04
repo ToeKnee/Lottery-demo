@@ -11,3 +11,5 @@ Getting started
 * pip install -r requirements.txt
 * cd src
 * ./manage.py collectstatic --link --noinput
+* ./manage.py migrate
+* ./manage.py runserver
