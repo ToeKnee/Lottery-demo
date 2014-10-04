@@ -128,9 +128,75 @@ COMPRESS_PRECOMPILERS = (
 )
 COMPRESS_CSS_HASHING_METHOD = "content"
 
+if DEBUG:
+    LOG_LEVEL = 'DEBUG'
+else:
+    LOG_LEVEL = 'WARNING'
 
 # If there is a local_settings.py, load those settings
 try:
     from local_settings import *
 except ImportError:
     pass
+
+# NOTE:  Settings after this line can't be overrided by local_settings!
+
+# Set up logging after local_settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(name)s %(lineno)s %(process)d %(thread)d %(message)s'
+        },
+        'normal': {
+            'format': '%(levelname)s %(asctime)s %(name)s:%(lineno)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'normal'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'WARNING',  # Set this to DEBUG if you want to
+                                 # see every SQL query generated
+                                 # (there will be a lot)
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    }
+}
+
+for app in INSTALLED_APPS:
+    if app.startswith("lottery"):
+        LOGGING["loggers"][app] = {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': LOG_LEVEL,
+        }
