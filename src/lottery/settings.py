@@ -127,3 +127,10 @@ COMPRESS_PRECOMPILERS = (
     ('text/scss', 'pyscss -I %s {infile} > {outfile}' % STATIC_ROOT),
 )
 COMPRESS_CSS_HASHING_METHOD = "content"
+
+
+# If there is a local_settings.py, load those settings
+try:
+    from local_settings import *
+except ImportError:
+    pass

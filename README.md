@@ -14,3 +14,10 @@ Getting started
 * ./manage.py compress  # Or change COMPRESS_OFFLINE to False
 * ./manage.py migrate
 * ./manage.py runserver
+
+
+
+Other info
+----------
+
+You can override any setting by creating a local_settings.py file.

@@ -5,7 +5,7 @@
 *.DS_Store
 .sass-cache/
 env
-src/local_settings.py
+src/lottery/local_settings.py
 src/.coverage
 src/htmlcov/*
 media/*
