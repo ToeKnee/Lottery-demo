@@ -43,6 +43,7 @@ INSTALLED_APPS = (
 
     # Application
     'lottery.base',
+    'lottery.lotto',
 )
 
 MIDDLEWARE_CLASSES = (

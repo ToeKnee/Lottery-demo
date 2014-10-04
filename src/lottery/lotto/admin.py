@@ -1,0 +1,9 @@
+from django.contrib import admin
+
+from .models import Lottery
+
+
+@admin.register(Lottery)
+class LotteryAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ("entrants", "winners")
