@@ -63,6 +63,16 @@ DATABASES = {
     }
 }
 
+# Caches
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211'
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -79,5 +89,31 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-STATIC_URL = '/static/'
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = os.path.abspath(os.path.join(SITE_ROOT, '..', '..', 'media'))
+
+# URL that handles the media served from MEDIA_ROOT.
+# Example: "http://media.lawrence.com"
+MEDIA_URL = '/media/'  # Not setting up a sub-domain just now
+
+# Static
+STATIC_ROOT = os.path.join(MEDIA_ROOT, 'static')
+STATIC_URL = "{media_url}static/".format(media_url=MEDIA_URL)
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
+# Compress settings
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
+
+# Compressor
+COMPRESS_PRECOMPILERS = (
+    ('text/scss', 'pyscss -I %s {infile} > {outfile}' % STATIC_ROOT),
+)
+COMPRESS_CSS_HASHING_METHOD = "content"

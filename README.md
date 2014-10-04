@@ -9,3 +9,5 @@ Getting started
 * virtualenv env
 * source env/bin/activate
 * pip install -r requirements.txt
+* cd src
+* ./manage.py collectstatic --link --noinput
