@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'lottery.base',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,6 +59,9 @@ WSGI_APPLICATION = 'lottery.wsgi.application'
 
 DATABASES = {
     'default': {
+        # I would normally pick postgres, but leaving this as it is
+        # the easiest to set up, and this app won't be in production
+        # either.
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
