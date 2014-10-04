@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>{% load compress i18n static %}
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="keywords" content="{% block keywords %}{% endblock %}">
+    <meta name="description" content="{% block description %}{% endblock %}">
+
+    {% block style %} {# Feel free to override this block and include only the style sheets required #}
+    {% compress css %}
+    <link rel="stylesheet" type="text/scss" href="{% static "scss/fonts.scss" %}">
+    <link rel="stylesheet" type="text/scss" href="{% static "scss/base_elements.scss" %}">
+    <link rel="stylesheet" type="text/scss" href="{% static "scss/style.scss" %}">
+    {% endcompress %}
+    {% endblock %}
+    <link rel="shortcut icon" href="{% static "favicon.ico" %}" type="image/vnd.microsoft.icon">
+    <link rel="canonical" href="{% block canonical %}{{ next_url }}{% endblock %}">
+    <title>{% block title %}{% endblock %}{% trans "Lottery Demo" %}</title>
+  </head>
+
+  <body>
+    <div class="overall">
+      {% block breadcrumbs %}
+      <div id="breadcrumbs">
+        <div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+          <a href="/" itemprop="url">
+            <span itemprop="title">{% trans "Home" %}</span>
+          </a>
+        </div>
+      </div>
+      {% endblock %}
+
+      <div class="header">
+        <a href="/" title="{% trans "Lottery" %}">
+          <img src="{% static "images/star.png" %}" alt="Star" width="64" height="64">
+          {% trans "Lottery" %}
+        </a>
+      </div>
+
+      {% block core %}
+      {% endblock core %}
+
+      <div class="footer">
+        {% block footer %}
+        {% endblock %}
+      </div>
+    </div>
+
+    {% block script %} {# Feel free to override this block and include only the javascript required #}
+    {% compress js %}
+    {% endcompress %}
+    {% endblock %}
+  </body>
+</html>

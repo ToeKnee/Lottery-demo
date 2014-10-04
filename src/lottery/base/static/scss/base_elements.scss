@@ -1,0 +1,21 @@
+@import "scss/colours.scss";
+
+html {
+    font-family: "caviar_dreamsregular";
+    background-color: $colour;
+}
+
+h1, h2, h3, h4, h5, h6, b, strong {
+    font-family: "caviar_dreamsbold";
+}
+
+i, em {
+    font-family: "caviar_dreamsitalic";
+}
+
+a {
+    color: $action-colour;
+    &:hover {
+        color: darken($action-colour, 10%);
+    }
+}

@@ -11,5 +11,6 @@ Getting started
 * pip install -r requirements.txt
 * cd src
 * ./manage.py collectstatic --link --noinput
+* ./manage.py compress  # Or change COMPRESS_OFFLINE to False
 * ./manage.py migrate
 * ./manage.py runserver

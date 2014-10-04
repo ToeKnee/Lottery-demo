@@ -1,0 +1,30 @@
+@import "scss/colours.scss";
+
+.overall {
+    width: 80em;
+    margin: 0.5em auto;
+    padding: 1em;
+    background-color: $background;
+
+    .header {
+        margin: 0 auto;
+        width: 5em;
+        font-family: "caviar_dreamsbold";
+        font-size: 4em;
+        a {
+            text-decoration: none;
+            color: $colour;
+        }
+    }
+}
+
+#breadcrumbs {
+    font-family: "caviar_dreamsbold";
+    a {
+        text-decoration: none;
+        color: $colour;
+        &:hover {
+            color: darken($colour, 100%);
+        }
+    }
+}

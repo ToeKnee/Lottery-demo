@@ -1,10 +1,17 @@
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
+
     # Examples:
-    # url(r'^$', 'lottery.views.home', name='home'),
+    url(r'^$', 'lottery.base.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+
 )
+
+# Static files
+urlpatterns += staticfiles_urlpatterns()
