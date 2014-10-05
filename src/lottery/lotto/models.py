@@ -27,8 +27,8 @@ class Lottery(models.Model):
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=default_end_date)
 
-    entrants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lottery_entered")
-    winners = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lottery_won")
+    entrants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lottery_entered", null=True, blank=True, editable=True)
+    winners = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lottery_won", null=True, blank=True)
 
     objects = LotteryManager()
 
@@ -48,13 +48,15 @@ class Lottery(models.Model):
         return bool(self.winners.filter(id=user_id).count())
 
     def check_win_condition(self, user):
+        """ Flip a coin to see if they have won
+        Pretty sure this lottery will go broke soon...
+        """
         # About twice as fast as the more obvious random.choice([True, False])
         return bool(random.getrandbits(1))
 
     def enter(self, user):
         """ Enter the lottery, and return if the user has won or not.
-        If the user has already one, will return if they have won
-        already
+        If the user has already one, return if they have won already.
         """
 
         if not self.has_entered(user.id):

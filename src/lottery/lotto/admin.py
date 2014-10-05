@@ -7,4 +7,4 @@ from .models import Lottery
 class LotteryAdmin(admin.ModelAdmin):
     list_display = ("title", "active")
     prepopulated_fields = {"slug": ("title",)}
-    readonly_fields = ("entrants", "winners")
+#    readonly_fields = ("winners",)

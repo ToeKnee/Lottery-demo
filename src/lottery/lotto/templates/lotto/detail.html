@@ -29,19 +29,29 @@
   <h1>{{ lottery }}</h1>
   {{ lottery.description|linebreaks }}
 
-  {% if entered %}
-    {% blocktrans %}
-      You have entered this lottery and have
-    {% endblocktrans %}
-    {% if not won %}
-       {% trans "not" %}
+  {% if user.is_authenticated %}
+    {% if entered %}
+      <b>
+        {% spaceless %}
+        {% blocktrans %}
+          You have entered this lottery and have
+        {% endblocktrans %}
+        {% if not won %}
+           {% trans "not" %}
+        {% endif %}
+        {% trans "won" %}
+        {% endspaceless %}
+      </b>
+    {% else %}
+      <form method="POST" action=".">
+        {% csrf_token %}
+        <input type="submit" name="enter" value="{% trans "Enter the lottery!" %}">
+      </form>
     {% endif %}
-    {% trans "won" %}
-
   {% else %}
-    {% blocktrans %}
-       Enter the lottery!
-    {% endblocktrans %}
+      {% blocktrans %}
+        You must log-in to play the lottery.
+      {% endblocktrans %}
   {% endif %}
 </div>
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.shortcuts import (
     get_object_or_404,
+    redirect,
     render,
 )
 
@@ -20,11 +21,19 @@ def detail(request, slug):
         entered = False
         won = False
     else:
-        entered = lottery.has_entered(request.user.id)
-        if entered:
-            won = lottery.has_won(request.user.id)
+        if request.method == "POST":
+            # We don't need any POST data for this, so we aren't using
+            # a Django form.  Assuming if a POST that we are entering
+            # the lottery.
+            entered = True
+            won = lottery.enter(request.user)
+            return redirect(lottery.get_absolute_url())
         else:
-            won = False
+            entered = lottery.has_entered(request.user.id)
+            if entered:
+                won = lottery.has_won(request.user.id)
+            else:
+                won = False
 
     context = {
         "lottery": lottery,

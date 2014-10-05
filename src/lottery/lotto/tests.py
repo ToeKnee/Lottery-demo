@@ -1,8 +1,13 @@
 import mock
 import unittest
 
+from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.http import Http404
+from django.test import (
+    TestCase,
+    RequestFactory,
+)
 
 from .factories import (
     ActiveLotteryFactory,
@@ -11,7 +16,9 @@ from .factories import (
     PastLotteryFactory,
 )
 from .models import Lottery
+from .views import detail
 from lottery.base.factories import UserFactory
+from lottery.base.test_utils import strip_spaces_from_html
 
 
 class LotteryActiveManagerTest(TestCase):
@@ -90,3 +97,140 @@ class LotteryUserTest(TestCase):
     def test_enter__already_entered_and_lost(self):
         self.lottery.entrants.add(self.user)
         self.assertFalse(self.lottery.enter(self.user))
+
+
+class DetailView(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_inactive_lottery_should_404(self):
+        lottery = InactiveLotteryFactory()
+
+        request = self.factory.get('')
+        request.user = AnonymousUser()
+
+        with self.assertRaises(Http404):
+            detail(request, lottery.slug)
+
+    def test_anonymous(self):
+        lottery = ActiveLotteryFactory()
+
+        request = self.factory.get('')
+        request.user = AnonymousUser()
+
+        response = detail(request, lottery.slug)
+        self.assertEqual(200, response.status_code)
+        self.assertIn("You must log-in to play the lottery.", response.content)
+
+    def test_get_not_entered(self):
+        lottery = ActiveLotteryFactory()
+
+        request = self.factory.get('')
+        request.user = UserFactory()
+
+        response = detail(request, lottery.slug)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertIn("Enter the lottery!", content)
+        self.assertIn("<form", content)
+        self.assertIn("type=\"submit\"", content)
+
+    def test_get_won(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+        lottery.entrants.add(user)
+        lottery.winners.add(user)
+
+        request = self.factory.get('')
+        request.user = user
+
+        response = detail(request, lottery.slug)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertNotIn("Enter the lottery!", content)
+        self.assertNotIn("<form", content)
+        self.assertNotIn("type=\"submit\"", content)
+        self.assertIn("You have entered this lottery and have won", content)
+
+    def test_get_lost(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+        lottery.entrants.add(user)
+
+        request = self.factory.get('')
+        request.user = user
+
+        response = detail(request, lottery.slug)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertNotIn("Enter the lottery!", content)
+        self.assertNotIn("<form", content)
+        self.assertNotIn("type=\"submit\"", content)
+        self.assertIn("You have entered this lottery and have not won", content)
+
+    def test_post_not_entered__winning(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+
+        request = self.factory.post('')
+        request.user = user
+
+        with mock.patch('random.getrandbits', return_value=1):
+            response = detail(request, lottery.slug)
+            self.assertEqual(302, response.status_code)
+            location = response._headers["location"][1]
+            self.assertEqual(location, lottery.get_absolute_url())
+            self.assertTrue(lottery.has_entered(user.id))
+            self.assertTrue(lottery.has_won(user.id))
+
+    def test_post_not_entered__losing(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+
+        request = self.factory.post('')
+        request.user = user
+
+        with mock.patch('random.getrandbits', return_value=0):
+            response = detail(request, lottery.slug)
+            self.assertEqual(302, response.status_code)
+            location = response._headers["location"][1]
+            self.assertEqual(location, lottery.get_absolute_url())
+            self.assertTrue(lottery.has_entered(user.id))
+            self.assertFalse(lottery.has_won(user.id))
+
+    def test_post_already_won(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+        lottery.entrants.add(user)
+        lottery.winners.add(user)
+
+        request = self.factory.post('')
+        request.user = user
+
+        # This will return the "lost" if they have not already won.
+        # But as they have, they will still have won
+        with mock.patch('random.getrandbits', return_value=0):
+            response = detail(request, lottery.slug)
+            self.assertEqual(302, response.status_code)
+            location = response._headers["location"][1]
+            self.assertEqual(location, lottery.get_absolute_url())
+            self.assertTrue(lottery.has_entered(user.id))
+            self.assertTrue(lottery.has_won(user.id))
+
+    def test_post_already_lost(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+        lottery.entrants.add(user)
+
+        request = self.factory.post('')
+        request.user = user
+
+        # This will return the "won" if they have not already lost.
+        # But as they have, they will still have lost
+        with mock.patch('random.getrandbits', return_value=1):
+            response = detail(request, lottery.slug)
+            self.assertEqual(302, response.status_code)
+            location = response._headers["location"][1]
+            self.assertEqual(location, lottery.get_absolute_url())
+            self.assertTrue(lottery.has_entered(user.id))
+            self.assertFalse(lottery.has_won(user.id))
