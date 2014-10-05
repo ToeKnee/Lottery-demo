@@ -1,9 +1,41 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block core %}
 <div>
   <p>
-    Welcome to the lottery.
+    {% trans "Welcome to the lottery." %}
   </p>
+
+  <h2>{% trans "Lotteries" %}</h2>
+  <ul id="active_lotteries">
+    {% for lottery in lotteries_open %}
+      <li>
+        <a href="{{ lottery.get_absolute_url }}">
+          {{ lottery }}
+        </a>
+      </li>
+    {% empty %}
+      <li>
+        <p>{% trans "No lotteries active" %}</p>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h2>{% trans "Entered Lotteries" %}</h2>
+  <p>
+    {% blocktrans %}
+    You have already entered these lotteries and can not enter again.
+    {% endblocktrans %}
+  </p>
+  <ul id="entered_lotteries">
+    {% for lottery in lotteries_entered %}
+      <li>{{ lottery }}</li>
+    {% empty %}
+      <li>
+        <p>{% trans "No lotteries entered" %}</p>
+      </li>
+    {% endfor %}
+  </ul>
 </div>
 {% endblock core %}
