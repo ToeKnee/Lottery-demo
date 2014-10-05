@@ -41,6 +41,12 @@ class Lottery(models.Model):
     def get_absolute_url(self):
         return reverse("lottery_detail", kwargs={"slug": self.slug})
 
+    def entrants_count(self):
+        return self.entrants.count()
+
+    def winners_count(self):
+        return self.winners.count()
+
     def has_entered(self, user_id):
         return bool(self.entrants.filter(pk=user_id).count())
 

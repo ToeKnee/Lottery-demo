@@ -59,6 +59,16 @@ class LotteryUserTest(TestCase):
         self.lottery = ActiveLotteryFactory()
         self.user = UserFactory()
 
+    def test_entrants_count(self):
+        self.assertEqual(0, self.lottery.entrants_count())
+        self.lottery.entrants.add(self.user)
+        self.assertEqual(1, self.lottery.entrants_count())
+
+    def test_winners_count(self):
+        self.assertEqual(0, self.lottery.winners_count())
+        self.lottery.winners.add(self.user)
+        self.assertEqual(1, self.lottery.winners_count())
+
     def test_entered(self):
         self.lottery.entrants.add(self.user)
         self.assertTrue(self.lottery.has_entered(self.user.pk))
