@@ -1,4 +1,5 @@
 import unittest
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from .factories import (
@@ -8,6 +9,7 @@ from .factories import (
     PastLotteryFactory,
 )
 from .models import Lottery
+from lottery.base.factories import UserFactory
 
 
 class LotteryActiveManagerTest(TestCase):
@@ -34,3 +36,30 @@ class LotteryTest(unittest.TestCase):
     def test_unicode(self):
         lottery = ActiveLotteryFactory.build()  # Don't store in the database
         self.assertEqual(unicode(lottery), lottery.title)
+
+    def test_get_absolute_url(self):
+        lottery = ActiveLotteryFactory.build()  # Don't store in the database
+        self.assertEqual(
+            reverse("lottery_detail", kwargs={"slug": lottery.slug}),
+            lottery.get_absolute_url()
+        )
+
+
+class LotteryUserTest(TestCase):
+    def setUp(self):
+        self.lottery = ActiveLotteryFactory()
+        self.user = UserFactory()
+
+    def test_entered(self):
+        self.lottery.entrants.add(self.user)
+        self.assertTrue(self.lottery.has_entered(self.user.pk))
+
+    def test_not_entered(self):
+        self.assertFalse(self.lottery.has_entered(self.user.pk))
+
+    def test_won(self):
+        self.lottery.winners.add(self.user)
+        self.assertTrue(self.lottery.has_won(self.user.pk))
+
+    def test_now_won(self):
+        self.assertFalse(self.lottery.has_won(self.user.pk))

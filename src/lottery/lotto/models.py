@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -35,3 +36,12 @@ class Lottery(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("lottery_detail", kwargs={"slug": self.slug})
+
+    def has_entered(self, user_id):
+        return bool(self.entrants.filter(pk=user_id).count())
+
+    def has_won(self, user_id):
+        return bool(self.winners.filter(id=user_id).count())

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ lottery }} - {% endblock %}
+{% block breadcrumbs %}
+<div id="breadcrumbs">
+  <div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="/" itemprop="url">
+      <span itemprop="title">{% trans "Home" %}</span>
+    </a>
+  </div>
+  ›
+  <div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="{% url "lotteries_list" %}" itemprop="url">
+      <span itemprop="title">{% trans "Lottery" %}</span>
+    </a>
+  </div>
+  ›
+  <div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="{{ lottery.get_absolute_url }}" itemprop="url">
+      <span itemprop="title">{{ lottery }}</span>
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block core %}
+<div>
+  <h1>{{ lottery }}</h1>
+  {{ lottery.description|linebreaks }}
+
+  {% if entered %}
+    {% blocktrans %}
+      You have entered this lottery and have
+    {% endblocktrans %}
+    {% if not won %}
+       {% trans "not" %}
+    {% endif %}
+    {% trans "won" %}
+
+  {% else %}
+    {% blocktrans %}
+       Enter the lottery!
+    {% endblocktrans %}
+  {% endif %}
+</div>
+{% endblock %}
