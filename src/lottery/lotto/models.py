@@ -27,8 +27,8 @@ class Lottery(models.Model):
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=default_end_date)
 
-    entrants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lottery_entered", null=True, blank=True, editable=True)
-    winners = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lottery_won", null=True, blank=True)
+    entrants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lotteries_entered", null=True, blank=True, editable=False)
+    winners = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="lotteries_won", null=True, blank=True)
 
     objects = LotteryManager()
 
