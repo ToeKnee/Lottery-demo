@@ -1,4 +1,6 @@
+import mock
 import unittest
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -63,3 +65,28 @@ class LotteryUserTest(TestCase):
 
     def test_now_won(self):
         self.assertFalse(self.lottery.has_won(self.user.pk))
+
+    def test_check_win_condition__win(self):
+        with mock.patch('random.getrandbits', return_value=1):
+            self.assertTrue(self.lottery.check_win_condition(self.user))
+
+    def test_check_win_condition__lose(self):
+        with mock.patch('random.getrandbits', return_value=0):
+            self.assertFalse(self.lottery.check_win_condition(self.user))
+
+    def test_enter__win(self):
+        with mock.patch('random.getrandbits', return_value=1):
+            self.assertTrue(self.lottery.enter(self.user))
+
+    def test_enter__lose(self):
+        with mock.patch('random.getrandbits', return_value=0):
+            self.assertFalse(self.lottery.enter(self.user))
+
+    def test_enter__already_entered_and_won(self):
+        self.lottery.entrants.add(self.user)
+        self.lottery.winners.add(self.user)
+        self.assertTrue(self.lottery.enter(self.user))
+
+    def test_enter__already_entered_and_lost(self):
+        self.lottery.entrants.add(self.user)
+        self.assertFalse(self.lottery.enter(self.user))

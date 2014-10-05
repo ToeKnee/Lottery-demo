@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -45,3 +46,22 @@ class Lottery(models.Model):
 
     def has_won(self, user_id):
         return bool(self.winners.filter(id=user_id).count())
+
+    def check_win_condition(self, user):
+        # About twice as fast as the more obvious random.choice([True, False])
+        return bool(random.getrandbits(1))
+
+    def enter(self, user):
+        """ Enter the lottery, and return if the user has won or not.
+        If the user has already one, will return if they have won
+        already
+        """
+
+        if not self.has_entered(user.id):
+            self.entrants.add(user)
+            has_won = self.check_win_condition(user)
+            if has_won:
+                self.winners.add(user)
+        else:
+            has_won = self.has_won(user.id)
+        return has_won
