@@ -13,6 +13,7 @@ Getting started
 * ./manage.py collectstatic --link --noinput
 * ./manage.py compress  # Or change COMPRESS_OFFLINE to False
 * ./manage.py migrate
+* ./manage.py test
 * ./manage.py createsuperuser
 * ./manage.py runserver
 
