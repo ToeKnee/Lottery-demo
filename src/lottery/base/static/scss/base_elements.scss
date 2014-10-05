@@ -16,6 +16,7 @@ i, em {
 
 a {
     color: $action-colour;
+    font-family: "caviar_dreamsbold";
     &:hover {
         color: darken($action-colour, 10%);
     }

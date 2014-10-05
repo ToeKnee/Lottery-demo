@@ -20,6 +20,9 @@
 
 #breadcrumbs {
     font-family: "caviar_dreamsbold";
+    div {
+        display: inline-block;
+    }
     a {
         text-decoration: none;
         color: $colour;

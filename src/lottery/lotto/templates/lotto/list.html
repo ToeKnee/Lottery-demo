@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div id="breadcrumbs">
+  <div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="/" itemprop="url">
+      <span itemprop="title">{% trans "Home" %}</span>
+    </a>
+  </div>
+  ›
+  <div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="{% url "lotteries_list" %}" itemprop="url">
+      <span itemprop="title">{% trans "Lottery" %}</span>
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block core %}
+<div>
+  <h2>{% trans "Lotteries" %}</h2>
+  <ul id="active_lotteries">
+    {% for lottery in lotteries %}
+      <li>
+        <a href="{{ lottery.get_absolute_url }}">
+          {{ lottery }}
+        </a>
+      </li>
+    {% empty %}
+      <li>
+        <p>{% trans "No lotteries active" %}</p>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
