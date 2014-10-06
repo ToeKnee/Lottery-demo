@@ -17,6 +17,15 @@ Getting started
 * ./manage.py createsuperuser
 * ./manage.py runserver
 
+Usage
+-----
+
+After creating an admin user, log-in and create a Lottery.  If the
+lottery is active and the dates are appropriate, it will show up on
+the home page and /lottery page.
+
+There is currently no register or log-in page, so it all has to be
+done through the admin.
 
 
 Other info
