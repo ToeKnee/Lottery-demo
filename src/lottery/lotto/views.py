@@ -7,8 +7,10 @@ from django.shortcuts import (
 from .models import Lottery
 
 
-def list(request):
-    lotteries = Lottery.objects.active().exclude(entrants=request.user)
+def list_view(request):
+    lotteries = Lottery.objects.active()
+    if request.user.is_authenticated():
+        lotteries = lotteries.exclude(entrants=request.user)
     context = {
         "lotteries": lotteries,
     }

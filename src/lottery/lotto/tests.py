@@ -16,7 +16,10 @@ from .factories import (
     PastLotteryFactory,
 )
 from .models import Lottery
-from .views import detail
+from .views import (
+    detail,
+    list_view,
+)
 from lottery.base.factories import UserFactory
 from lottery.base.test_utils import strip_spaces_from_html
 
@@ -107,6 +110,68 @@ class LotteryUserTest(TestCase):
     def test_enter__already_entered_and_lost(self):
         self.lottery.entrants.add(self.user)
         self.assertFalse(self.lottery.enter(self.user))
+
+
+class ListView(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_anonymous__no_lotteries(self):
+        request = self.factory.get('')
+        request.user = AnonymousUser()
+
+        response = list_view(request)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertIn("No lotteries active", content)
+
+    def test_anonymous__with_lottery(self):
+        lottery = ActiveLotteryFactory()
+        request = self.factory.get('')
+        request.user = AnonymousUser()
+
+        response = list_view(request)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertIn(lottery.title, content)
+        self.assertIn(lottery.get_absolute_url(), content)
+
+    def test_no_lotteries(self):
+        user = UserFactory()
+        request = self.factory.get('')
+        request.user = user
+
+        response = list_view(request)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertIn("No lotteries active", content)
+
+    def test_with_lottery__not_entered(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+        request = self.factory.get('')
+        request.user = user
+
+        response = list_view(request)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertIn(lottery.title, content)
+        self.assertIn(lottery.get_absolute_url(), content)
+
+    def test_with_lottery_entered(self):
+        lottery = ActiveLotteryFactory()
+        user = UserFactory()
+        lottery.entrants.add(user)
+
+        request = self.factory.get('')
+        request.user = user
+
+        response = list_view(request)
+        self.assertEqual(200, response.status_code)
+        content = strip_spaces_from_html(response.content)
+        self.assertIn("No lotteries active", content)
+        self.assertNotIn(lottery.title, content)
+        self.assertNotIn(lottery.get_absolute_url(), content)
 
 
 class DetailView(TestCase):
